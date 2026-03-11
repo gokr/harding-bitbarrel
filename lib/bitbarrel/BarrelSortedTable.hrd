@@ -1,0 +1,179 @@
+#!/usr/bin/env harding
+
+BarrelSortedTable := Object derive: #(barrel name).
+
+BarrelSortedTable class>>open: aName [
+    | table |
+    table := self new.
+    table name: aName.
+    table connectAndOpen: aName.
+    ^table
+].
+
+BarrelSortedTable class>>create: aName [
+    | table barrel |
+    barrel := Barrel new.
+    barrel create: aName mode: "critbit".
+    barrel use: aName.
+    table := self new.
+    table barrel: barrel.
+    table name: aName.
+    ^table
+].
+
+BarrelSortedTable>>connectAndOpen: aName [
+    | barrel |
+    barrel := Barrel new.
+    barrel use: aName.
+    self barrel: barrel.
+    self name: aName.
+].
+
+BarrelSortedTable>>at: key [
+    <primitive barrelSortedTableAt: key>
+].
+
+BarrelSortedTable>>at: key put: value [
+    <primitive barrelSortedTableAt: key put: value>
+    ^self
+].
+
+BarrelSortedTable>>keys [
+    <primitive barrelSortedTableKeys>
+].
+
+BarrelSortedTable>>size [
+    <primitive barrelSortedTableSize>
+].
+
+BarrelSortedTable>>rangeFrom: startKey to: endKey [
+    ^self rangeFrom: startKey to: endKey limit: 1000
+].
+
+BarrelSortedTable>>rangeFrom: startKey to: endKey limit: limit [
+    <primitive barrelSortedTableRangeFrom: startKey to: endKey limit: limit>
+].
+
+BarrelSortedTable>>prefix: prefix [
+    ^self prefix: prefix limit: 1000
+].
+
+BarrelSortedTable>>prefix: prefix limit: limit [
+    <primitive barrelSortedTablePrefix: prefix limit: limit>
+].
+
+BarrelSortedTable>>first [
+    | keys result |
+    keys := self keys.
+    keys isEmpty ifTrue: [^nil].
+    result := Array new.
+    result add: keys first.
+    result add: (self at: keys first).
+    ^result
+].
+
+BarrelSortedTable>>last [
+    | keys result |
+    keys := self keys.
+    keys isEmpty ifTrue: [^nil].
+    result := Array new.
+    result add: keys last.
+    result add: (self at: keys last).
+    ^result
+].
+
+BarrelSortedTable>>firstKey [
+    | keys |
+    keys := self keys.
+    keys isEmpty ifTrue: [^nil].
+    ^keys first
+].
+
+BarrelSortedTable>>lastKey [
+    | keys |
+    keys := self keys.
+    keys isEmpty ifTrue: [^nil].
+    ^keys last
+].
+
+BarrelSortedTable>>do: block [
+    self keys do: [:key |
+        block value: key value: (self at: key)
+    ].
+    ^self
+].
+
+BarrelSortedTable>>collect: block [
+    | result |
+    result := Table new.
+    self do: [:key :val |
+        result at: key put: (block value: key value: val)
+    ].
+    ^result
+].
+
+BarrelSortedTable>>select: block [
+    | result |
+    result := Table new.
+    self do: [:key :val |
+        (block value: key value: val) ifTrue: [
+            result at: key put: val
+        ]
+    ].
+    ^result
+].
+
+BarrelSortedTable>>reject: block [
+    | result |
+    result := Table new.
+    self do: [:key :val |
+        (block value: key value: val) ifFalse: [
+            result at: key put: val
+        ]
+    ].
+    ^result
+].
+
+BarrelSortedTable>>detect: block [
+    | result |
+    self do: [:key :val |
+        (block value: key value: val) ifTrue: [
+            result := Array new.
+            result add: key.
+            result add: val.
+            ^result
+        ]
+    ].
+    ^nil
+].
+
+BarrelSortedTable>>isEmpty [
+    ^self size = 0
+].
+
+BarrelSortedTable>>notEmpty [
+    ^self size > 0
+].
+
+BarrelSortedTable>>values [
+    | result |
+    result := Array new.
+    self keys do: [:key |
+        result add: (self at: key)
+    ].
+    ^result
+].
+
+BarrelSortedTable>>rangeDo: block from: startKey to: endKey [
+    (self rangeFrom: startKey to: endKey) do: [:key :val |
+        block value: key value: val
+    ].
+    ^self
+].
+
+BarrelSortedTable>>prefixDo: block prefix: prefix [
+    (self prefix: prefix) do: [:key :val |
+        block value: key value: val
+    ].
+    ^self
+].

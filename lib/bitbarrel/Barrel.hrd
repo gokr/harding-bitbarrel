@@ -1,0 +1,39 @@
+#!/usr/bin/env harding
+
+Barrel := Object derive: #(connection).
+
+Barrel class>>new [
+    ^self open: "localhost:9876"
+].
+
+Barrel class>>open: host [
+    | barrel |
+    barrel := super new.
+    barrel connect: host.
+    ^barrel
+].
+
+Barrel>>connect: host [
+    <primitive barrelConnect: host>
+    ^self
+].
+
+Barrel>>create: name [
+    ^self create: name mode: "hash"
+].
+
+Barrel>>create: name mode: mode [
+    <primitive barrelCreate: name mode: mode>
+].
+
+Barrel>>use: name [
+    <primitive barrelUse: name>
+].
+
+Barrel>>close [
+    <primitive barrelClose>
+].
+
+Barrel>>listBarrels [
+    <primitive barrelListBarrels>
+].

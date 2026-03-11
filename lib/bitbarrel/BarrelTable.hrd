@@ -1,0 +1,127 @@
+#!/usr/bin/env harding
+
+BarrelTable := Object derive: #(barrel name).
+
+BarrelTable class>>open: aName [
+    | table |
+    table := self new.
+    table name: aName.
+    table connectAndOpen: aName mode: "hash".
+    ^table
+].
+
+BarrelTable class>>create: aName [
+    ^self create: aName mode: "hash"
+].
+
+BarrelTable class>>create: aName mode: mode [
+    | table barrel |
+    barrel := Barrel new.
+    barrel create: aName mode: mode.
+    barrel use: aName.
+    table := self new.
+    table barrel: barrel.
+    table name: aName.
+    ^table
+].
+
+BarrelTable>>connectAndOpen: aName mode: mode [
+    | barrel |
+    barrel := Barrel new.
+    barrel use: aName.
+    self barrel: barrel.
+    self name: aName.
+].
+
+BarrelTable>>at: key [
+    <primitive barrelTableAt: key>
+].
+
+BarrelTable>>at: key put: value [
+    <primitive barrelTableAt: key put: value>
+    ^self
+].
+
+BarrelTable>>includesKey: key [
+    <primitive barrelTableIncludesKey: key>
+].
+
+BarrelTable>>removeKey: key [
+    <primitive barrelTableRemoveKey: key>
+].
+
+BarrelTable>>keys [
+    <primitive barrelTableKeys>
+].
+
+BarrelTable>>size [
+    <primitive barrelTableSize>
+].
+
+BarrelTable>>do: block [
+    self keys do: [:key |
+        block value: key value: (self at: key)
+    ].
+    ^self
+].
+
+BarrelTable>>collect: block [
+    | result |
+    result := Table new.
+    self do: [:key :val |
+        result at: key put: (block value: key value: val)
+    ].
+    ^result
+].
+
+BarrelTable>>select: block [
+    | result |
+    result := Table new.
+    self do: [:key :val |
+        (block value: key value: val) ifTrue: [
+            result at: key put: val
+        ]
+    ].
+    ^result
+].
+
+BarrelTable>>reject: block [
+    | result |
+    result := Table new.
+    self do: [:key :val |
+        (block value: key value: val) ifFalse: [
+            result at: key put: val
+        ]
+    ].
+    ^result
+].
+
+BarrelTable>>detect: block [
+    | result |
+    self do: [:key :val |
+        (block value: key value: val) ifTrue: [
+            result := Array new.
+            result add: key.
+            result add: val.
+            ^result
+        ]
+    ].
+    ^nil
+].
+
+BarrelTable>>isEmpty [
+    ^self size = 0
+].
+
+BarrelTable>>notEmpty [
+    ^self size > 0
+].
+
+BarrelTable>>values [
+    | result |
+    result := Array new.
+    self keys do: [:key |
+        result add: (self at: key)
+    ].
+    ^result
+].

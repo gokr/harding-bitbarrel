@@ -1,0 +1,7 @@
+#!/usr/bin/env harding
+
+Harding load: "lib/bitbarrel/Barrel.hrd".
+Harding load: "lib/bitbarrel/BarrelTable.hrd".
+Harding load: "lib/bitbarrel/BarrelSortedTable.hrd".
+
+Transcript showCr: "BitBarrel library loaded".
